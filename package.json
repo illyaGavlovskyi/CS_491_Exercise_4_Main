@@ -7,5 +7,12 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
-  }
+  },
+  "name": "cs_491_exercise_4_main",
+  "version": "1.0.0",
+  "description": "Welcome to your shiny new Codespace running Express! We've got everything fired up and running for you to explore Express.",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
