@@ -2,6 +2,7 @@ const SIZE = 4;
 const boardElem = document.getElementById("board");
 const button = document.getElementById("state-button");
 const playerDisplay = document.getElementById("playerNameDisplay");
+const statusEl = document.getElementById("statusMessage");
 
 let board = [];
 let currentPlayer = "O";
@@ -38,7 +39,7 @@ function isMe(playerObj) {
 
 async function startPolling() {
   await fetchGame();
-  setInterval(fetchGame, 1000);
+  setInterval(fetchGame, 500);
 }
 
 async function fetchGame() {
@@ -53,12 +54,12 @@ async function fetchGame() {
   playerX = data.playerX;
   playerO = data.playerO;
 
-  // Assign self to X or O if available
-  if (!playerX && !isMe(playerO)) {
+  // Assign roles
+  if (!playerX && (!playerO || !isMe(playerO))) {
     data.playerX = { user: myName, browser: myBrowser };
     mySymbol = "X";
     await saveGame(data);
-  } else if (!playerO && !isMe(playerX)) {
+  } else if (!playerO && (!playerX || !isMe(playerX))) {
     data.playerO = { user: myName, browser: myBrowser };
     mySymbol = "O";
     await saveGame(data);
@@ -70,6 +71,7 @@ async function fetchGame() {
 
   playerDisplay.textContent = `You are: ${myName} (${mySymbol || "Spectator"})`;
   renderBoard();
+  updateStatusMessage();
 }
 
 function renderBoard() {
@@ -92,6 +94,22 @@ function renderBoard() {
   button.textContent = state;
 }
 
+function updateStatusMessage() {
+  if (!playerX || !playerO) {
+    statusEl.textContent = "Waiting for players to join...";
+  } else if (winLine.length) {
+    statusEl.textContent = `Player ${currentPlayer === "O" ? "X" : "O"} wins!`;
+  } else if (!gameActive && state === "Clear") {
+    statusEl.textContent = "It's a draw!";
+  } else if (mySymbol && isMyTurn()) {
+    statusEl.textContent = "Your turn!";
+  } else if (mySymbol) {
+    statusEl.textContent = `Waiting for opponent... (${currentPlayer}'s turn)`;
+  } else {
+    statusEl.textContent = "Spectating game.";
+  }
+}
+
 async function handleMove(e) {
   if (!isMyTurn()) return;
 
@@ -111,14 +129,11 @@ async function handleMove(e) {
     currentPlayer = currentPlayer === "O" ? "X" : "O";
   }
 
-  await saveGame({
-    board, currentPlayer, gameActive, winLine, state, playerX, playerO
-  });
+  await saveGame({ board, currentPlayer, gameActive, winLine, state, playerX, playerO });
 }
 
 function checkWinner(r, c) {
   const dirs = [[0,1],[1,0],[1,1],[1,-1]];
-  const win = [];
   for (const [dr, dc] of dirs) {
     let line = [[r, c]];
     for (let i = 1; i < 4; i++) {
@@ -148,18 +163,28 @@ button.onclick = async () => {
   if (!mySymbol) return alert("Only X or O can control the game");
 
   if (state === "Flip") {
-    currentPlayer = Math.random() < 0.5 ? "O" : "X";
+    const coinWinner = Math.random() < 0.5 ? "X" : "O";
+    const oPlayer = coinWinner === "X" ? playerX : playerO;
+    const xPlayer = coinWinner === "X" ? playerO : playerX;
+
     board = Array.from({ length: SIZE }, () => Array(SIZE).fill(""));
-    winLine = [];
+    currentPlayer = "O";
     gameActive = true;
+    winLine = [];
     state = "Playing";
+
+    await saveGame({
+      board, currentPlayer, gameActive, winLine, state,
+      playerX: xPlayer,
+      playerO: oPlayer
+    });
   } else if (state === "Clear" || state === "Start") {
     board = Array.from({ length: SIZE }, () => Array(SIZE).fill(""));
     winLine = [];
     gameActive = true;
     state = "Playing";
     currentPlayer = currentPlayer === "O" ? "X" : "O";
-  }
 
-  await saveGame({ board, currentPlayer, gameActive, winLine, state, playerX, playerO });
+    await saveGame({ board, currentPlayer, gameActive, winLine, state, playerX, playerO });
+  }
 };
