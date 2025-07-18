@@ -1,42 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Four-in-a-Row</title>
   <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      margin-top: 40px;
-    }
-    h1 {
-      font-size: 2em;
-    }
-    table {
-      margin: 20px auto;
-      border-collapse: collapse;
-    }
+    body { font-family: sans-serif; text-align: center; margin-top: 40px; }
+    table { margin: 20px auto; border-collapse: collapse; }
     td {
-      width: 60px;
-      height: 60px;
-      border: 2px solid black;
-      font-size: 2em;
-      text-align: center;
-      vertical-align: middle;
+      width: 60px; height: 60px; border: 2px solid black;
+      font-size: 2em; text-align: center; vertical-align: middle;
       cursor: pointer;
     }
-    button {
-      padding: 10px 20px;
-      font-size: 1em;
-    }
+    .win { background-color: red; color: white; }
+    button { padding: 10px 20px; font-size: 1em; }
   </style>
 </head>
 <body>
   <h1>Four-in-a-Row</h1>
+  <div id="playerNameDisplay"></div>
   <table id="board"></table>
   <br />
-  <button id="state-button">Start</button>
+  <button id="state-button">Flip</button>
 
   <script src="script.js"></script>
 </body>

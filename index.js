@@ -1,19 +1,36 @@
 const express = require('express');
+const fs = require('fs');
 const path = require('path');
 const app = express();
 
-// Use port 8000 or the one set in environment
 const PORT = process.env.PORT || 8000;
+const gameFile = path.join(__dirname, 'game.json');
 
-// Serve static files from 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
 
-// Route for base URL - send index.html
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+if (!fs.existsSync(gameFile)) {
+  fs.writeFileSync(gameFile, JSON.stringify({
+    board: Array(4).fill().map(() => Array(4).fill("")),
+    currentPlayer: "O",
+    gameActive: false,
+    winLine: [],
+    state: "Flip",
+    playerX: null,
+    playerO: null
+  }, null, 2));
+}
+
+app.get('/state', (req, res) => {
+  const game = JSON.parse(fs.readFileSync(gameFile));
+  res.json(game);
 });
 
-// Start server
+app.post('/state', (req, res) => {
+  fs.writeFileSync(gameFile, JSON.stringify(req.body, null, 2));
+  res.sendStatus(200);
+});
+
 app.listen(PORT, () => {
-  console.log(`Four-in-a-Row app is running at http://localhost:${PORT}`);
+  console.log(`Server running at http://localhost:${PORT}`);
 });
