@@ -12,7 +12,7 @@ app.use(express.json());
 if (!fs.existsSync(gameFile)) {
   fs.writeFileSync(gameFile, JSON.stringify({
     board: Array(4).fill().map(() => Array(4).fill("")),
-    currentPlayer: "O",
+    currentPlayer: "",
     gameActive: false,
     winLine: [],
     state: "Flip",

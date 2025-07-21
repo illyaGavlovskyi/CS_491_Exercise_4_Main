@@ -5,7 +5,7 @@ const playerDisplay = document.getElementById("playerNameDisplay");
 const statusEl = document.getElementById("statusMessage");
 
 let board = [];
-let currentPlayer = "O";
+let currentPlayer = "";
 let gameActive = false;
 let winLine = [];
 let state = "Flip";
@@ -29,14 +29,6 @@ function detectBrowser() {
   return "Unknown";
 }
 
-function isMyTurn() {
-  return gameActive && mySymbol === currentPlayer;
-}
-
-function isMe(playerObj) {
-  return playerObj && playerObj.user === myName && playerObj.browser === myBrowser;
-}
-
 async function startPolling() {
   await fetchGame();
   setInterval(fetchGame, 500);
@@ -55,23 +47,42 @@ async function fetchGame() {
   playerO = data.playerO;
 
   // Assign roles
-  if (!playerX && (!playerO || !isMe(playerO))) {
+  if (!playerX && (!playerO || !isMe(playerO))) { // If there is no player X and either: there is no player O yet, or player O is not me
     data.playerX = { user: myName, browser: myBrowser };
-    mySymbol = "X";
+    mySymbol = "X"; //assign me to be playerX
     await saveGame(data);
-  } else if (!playerO && (!playerX || !isMe(playerX))) {
+  } 
+  else if (!playerO && (!playerX || !isMe(playerX))) { // If there is no player O AND either: there is no player X, or player X is not me
     data.playerO = { user: myName, browser: myBrowser };
-    mySymbol = "O";
+    mySymbol = "O"; // assign me to be playerO
     await saveGame(data);
-  } else if (isMe(playerX)) {
+  } 
+  else if (isMe(playerX)) {
     mySymbol = "X";
-  } else if (isMe(playerO)) {
+  } 
+  else if (isMe(playerO)) {
     mySymbol = "O";
   }
 
   playerDisplay.textContent = `You are: ${myName} (${mySymbol || "Spectator"})`;
   renderBoard();
   updateStatusMessage();
+}
+
+function isMyTurn() {
+  return gameActive && mySymbol === currentPlayer;
+}
+
+function isMe(playerObj) {
+  return playerObj && playerObj.user === myName && playerObj.browser === myBrowser;
+}
+
+async function saveGame(state) {
+  await fetch('/state', {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(state)
+  });
 }
 
 function renderBoard() {
@@ -151,13 +162,7 @@ function checkWinner(r, c) {
   return [];
 }
 
-async function saveGame(state) {
-  await fetch('/state', {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(state)
-  });
-}
+
 
 button.onclick = async () => {
   if (!mySymbol) return alert("Only X or O can control the game");
