@@ -107,17 +107,22 @@ function renderBoard() {
 
 function updateStatusMessage() {
   if (!playerX || !playerO) {
-    statusEl.textContent = "Waiting for players to join...";
-  } else if (winLine.length) {
+    statusEl.textContent = "Waiting for players to join the game";
+  } 
+  else if (winLine.length) {
     statusEl.textContent = `Player ${currentPlayer === "O" ? "X" : "O"} wins!`;
-  } else if (!gameActive && state === "Clear") {
+  } 
+  else if (!gameActive && state === "Clear") {
     statusEl.textContent = "It's a draw!";
-  } else if (mySymbol && isMyTurn()) {
+  } 
+  else if (mySymbol && isMyTurn()) {
     statusEl.textContent = "Your turn!";
-  } else if (mySymbol) {
-    statusEl.textContent = `Waiting for opponent... (${currentPlayer}'s turn)`;
-  } else {
-    statusEl.textContent = "Spectating game.";
+  } 
+  else if (mySymbol) {
+    statusEl.textContent = `Waiting for opponent (${currentPlayer}'s turn)`;
+  } 
+  else {
+    statusEl.textContent = "Spectating game";
   }
 }
 
@@ -133,10 +138,12 @@ async function handleMove(e) {
   if (winLine.length) {
     gameActive = false;
     state = "Start";
-  } else if (board.flat().every(cell => cell !== "")) {
+  } 
+  else if (board.flat().every(cell => cell !== "")) {
     gameActive = false;
     state = "Clear";
-  } else {
+  } 
+  else {
     currentPlayer = currentPlayer === "O" ? "X" : "O";
   }
 
@@ -161,8 +168,6 @@ function checkWinner(r, c) {
   }
   return [];
 }
-
-
 
 button.onclick = async () => {
   if (!mySymbol) return alert("Only X or O can control the game");
