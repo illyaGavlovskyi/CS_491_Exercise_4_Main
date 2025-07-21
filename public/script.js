@@ -6,12 +6,14 @@ const statusEl = document.getElementById("statusMessage");
 
 let board = [];
 let currentPlayer = "";
-let gameActive = false;
+let gameActive = true;
 let winLine = [];
 let state = "Flip";
 let playerX = null;
 let playerO = null;
 let myName, myBrowser, mySymbol;
+
+let lastWinner = null;
 
 init();
 
@@ -45,6 +47,7 @@ async function fetchGame() {
   state = data.state;
   playerX = data.playerX;
   playerO = data.playerO;
+  lastWinner = data.lastWinner; // retrieve from server
 
   // Assign roles
   if (!playerX && (!playerO || !isMe(playerO))) { // If there is no player X and either: there is no player O yet, or player O is not me
@@ -138,16 +141,20 @@ async function handleMove(e) {
   if (winLine.length) {
     gameActive = false;
     state = "Start";
+    lastWinner = mySymbol;
   } 
   else if (board.flat().every(cell => cell !== "")) {
     gameActive = false;
     state = "Clear";
+    lastWinner = null;
   } 
   else {
     currentPlayer = currentPlayer === "O" ? "X" : "O";
   }
 
-  await saveGame({ board, currentPlayer, gameActive, winLine, state, playerX, playerO });
+  await saveGame({
+  board, currentPlayer, gameActive, winLine, state, playerX, playerO, lastWinner
+  });
 }
 
 function checkWinner(r, c) {
@@ -210,31 +217,42 @@ button.onclick = async () => {
     currentPlayer = coinWinner;
     board = Array.from({ length: SIZE }, () => Array(SIZE).fill(""));
     winLine = [];
-    gameActive = false;
-    state = "Start";
+    gameActive = true;
+    state = "Clear";
 
     await saveGame({
       board, currentPlayer, gameActive, winLine, state,
       playerX: xPlayer || playerX,
-      playerO: oPlayer || playerO
+      playerO: oPlayer || playerO,
+      lastWinner
     });
   }
 
   else if (state === "Start") {
+    if (mySymbol !== lastWinner) {
+      return alert("Only the player who won the last game can start a new one.");
+    }
+
     gameActive = true;
     state = "Clear"; // Next click will clear the board
-    await saveGame({ board, currentPlayer, gameActive, winLine, state, playerX, playerO });
+    board = Array.from({ length: SIZE }, () => Array(SIZE).fill(""));
+    winLine = [];
+    await saveGame({
+    board, currentPlayer, gameActive, winLine, state, playerX, playerO, lastWinner
+    });
   }
 
   else if (state === "Clear") {
     board = Array.from({ length: SIZE }, () => Array(SIZE).fill(""));
     winLine = [];
     gameActive = false;
-    state = "Flip";
+    state = "Start";
     currentPlayer = "";
-    playerX = null;
-    playerO = null;
+    // playerX = null;
+    // playerO = null;
 
-    await saveGame({ board, currentPlayer, gameActive, winLine, state, playerX, playerO });
+    await saveGame({
+    board, currentPlayer, gameActive, winLine, state, playerX, playerO, lastWinner
+    });
   }
 };

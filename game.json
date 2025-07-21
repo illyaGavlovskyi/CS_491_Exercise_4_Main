@@ -2,7 +2,7 @@
   "board": [
     [
       "",
-      "O",
+      "",
       "",
       ""
     ],
@@ -10,7 +10,7 @@
       "",
       "",
       "",
-      "X"
+      ""
     ],
     [
       "",
@@ -30,11 +30,12 @@
   "winLine": [],
   "state": "Clear",
   "playerX": {
-    "user": "thomas",
-    "browser": "Safari"
+    "user": "illya",
+    "browser": "Chrome"
   },
   "playerO": {
-    "user": "john",
-    "browser": "Safari"
-  }
+    "user": "illya",
+    "browser": "Chrome"
+  },
+  "lastWinner": "O"
 }
