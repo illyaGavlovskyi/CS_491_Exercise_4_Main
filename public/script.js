@@ -169,31 +169,71 @@ function checkWinner(r, c) {
   return [];
 }
 
+// button.onclick = async () => {
+//   if (!mySymbol) return alert("Only X or O can control the game");
+
+//   if (state === "Flip") {
+//     const coinWinner = Math.random() < 0.5 ? "X" : "O";
+//     const oPlayer = coinWinner === "X" ? playerX : playerO;
+//     const xPlayer = coinWinner === "X" ? playerO : playerX;
+
+//     board = Array.from({ length: SIZE }, () => Array(SIZE).fill(""));
+//     currentPlayer = "O";
+//     gameActive = true;
+//     winLine = [];
+//     state = "Playing";
+
+//     await saveGame({
+//       board, currentPlayer, gameActive, winLine, state,
+//       playerX: xPlayer,
+//       playerO: oPlayer
+//     });
+//   } else if (state === "Clear" || state === "Start") {
+//     board = Array.from({ length: SIZE }, () => Array(SIZE).fill(""));
+//     winLine = [];
+//     gameActive = true;
+//     state = "Playing";
+//     currentPlayer = currentPlayer === "O" ? "X" : "O";
+
+//     await saveGame({ board, currentPlayer, gameActive, winLine, state, playerX, playerO });
+//   }
+// };
+
 button.onclick = async () => {
   if (!mySymbol) return alert("Only X or O can control the game");
 
   if (state === "Flip") {
     const coinWinner = Math.random() < 0.5 ? "X" : "O";
-    const oPlayer = coinWinner === "X" ? playerX : playerO;
-    const xPlayer = coinWinner === "X" ? playerO : playerX;
+    const xPlayer = coinWinner === "X" ? { user: myName, browser: myBrowser } : null;
+    const oPlayer = coinWinner === "O" ? { user: myName, browser: myBrowser } : null;
 
+    currentPlayer = coinWinner;
     board = Array.from({ length: SIZE }, () => Array(SIZE).fill(""));
-    currentPlayer = "O";
-    gameActive = true;
     winLine = [];
-    state = "Playing";
+    gameActive = false;
+    state = "Start";
 
     await saveGame({
       board, currentPlayer, gameActive, winLine, state,
-      playerX: xPlayer,
-      playerO: oPlayer
+      playerX: xPlayer || playerX,
+      playerO: oPlayer || playerO
     });
-  } else if (state === "Clear" || state === "Start") {
+  }
+
+  else if (state === "Start") {
+    gameActive = true;
+    state = "Clear"; // Next click will clear the board
+    await saveGame({ board, currentPlayer, gameActive, winLine, state, playerX, playerO });
+  }
+
+  else if (state === "Clear") {
     board = Array.from({ length: SIZE }, () => Array(SIZE).fill(""));
     winLine = [];
-    gameActive = true;
-    state = "Playing";
-    currentPlayer = currentPlayer === "O" ? "X" : "O";
+    gameActive = false;
+    state = "Flip";
+    currentPlayer = "";
+    playerX = null;
+    playerO = null;
 
     await saveGame({ board, currentPlayer, gameActive, winLine, state, playerX, playerO });
   }

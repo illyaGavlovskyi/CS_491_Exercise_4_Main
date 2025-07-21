@@ -2,7 +2,7 @@
   "board": [
     [
       "",
-      "",
+      "O",
       "",
       ""
     ],
@@ -10,7 +10,7 @@
       "",
       "",
       "",
-      ""
+      "X"
     ],
     [
       "",
@@ -25,13 +25,16 @@
       ""
     ]
   ],
-  "currentPlayer": "",
-  "gameActive": false,
+  "currentPlayer": "O",
+  "gameActive": true,
   "winLine": [],
-  "state": "Flip",
+  "state": "Clear",
   "playerX": {
-    "user": "illya",
-    "browser": "Chrome"
+    "user": "thomas",
+    "browser": "Safari"
   },
-  "playerO": null
+  "playerO": {
+    "user": "john",
+    "browser": "Safari"
+  }
 }
