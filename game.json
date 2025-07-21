@@ -25,16 +25,13 @@
       ""
     ]
   ],
-  "currentPlayer": "O",
-  "gameActive": true,
+  "currentPlayer": "",
+  "gameActive": false,
   "winLine": [],
-  "state": "Playing",
+  "state": "Flip",
   "playerX": {
-    "user": "thomas ",
-    "browser": "Safari"
+    "user": "illya",
+    "browser": "Chrome"
   },
-  "playerO": {
-    "user": "vasile",
-    "browser": "Safari"
-  }
+  "playerO": null
 }
