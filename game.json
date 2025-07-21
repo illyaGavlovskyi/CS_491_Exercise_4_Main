@@ -4,21 +4,9 @@
       "",
       "",
       "",
-      "",
-      "",
       ""
     ],
     [
-      "",
-      "",
-      "",
-      "",
-      "",
-      ""
-    ],
-    [
-      "",
-      "",
       "",
       "",
       "",
@@ -28,37 +16,25 @@
       "",
       "",
       "",
-      "",
-      "",
       ""
     ],
     [
-      "",
-      "",
-      "",
-      "",
-      "",
-      ""
-    ],
-    [
-      "",
-      "",
       "",
       "",
       "",
       ""
     ]
   ],
-  "currentPlayer": "X",
+  "currentPlayer": "O",
   "gameActive": true,
   "winLine": [],
   "state": "Playing",
   "playerX": {
-    "user": "t",
-    "browser": "Chrome"
+    "user": "thomas ",
+    "browser": "Safari"
   },
   "playerO": {
-    "user": "illya",
-    "browser": "Chrome"
+    "user": "vasile",
+    "browser": "Safari"
   }
 }
