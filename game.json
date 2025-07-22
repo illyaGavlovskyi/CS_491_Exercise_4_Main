@@ -1,7 +1,7 @@
 {
   "board": [
     [
-      "O",
+      "",
       "",
       "",
       ""
@@ -25,16 +25,10 @@
       ""
     ]
   ],
-  "currentPlayer": "X",
-  "gameActive": true,
+  "currentPlayer": "",
+  "gameActive": false,
   "winLine": [],
-  "state": "Clear",
-  "playerX": {
-    "user": "jjjjjjjj",
-    "browser": "Safari"
-  },
-  "playerO": {
-    "user": "jjjjjjjj",
-    "browser": "Safari"
-  }
+  "state": "Flip",
+  "playerX": null,
+  "playerO": null
 }
