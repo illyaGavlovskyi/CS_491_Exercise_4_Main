@@ -1,7 +1,7 @@
 {
   "board": [
     [
-      "",
+      "O",
       "",
       "",
       ""
@@ -25,17 +25,16 @@
       ""
     ]
   ],
-  "currentPlayer": "O",
+  "currentPlayer": "X",
   "gameActive": true,
   "winLine": [],
   "state": "Clear",
   "playerX": {
-    "user": "illya",
-    "browser": "Chrome"
+    "user": "jjjjjjjj",
+    "browser": "Safari"
   },
   "playerO": {
-    "user": "illya",
-    "browser": "Chrome"
-  },
-  "lastWinner": "O"
+    "user": "jjjjjjjj",
+    "browser": "Safari"
+  }
 }
