@@ -29,6 +29,9 @@
   "gameActive": false,
   "winLine": [],
   "state": "Flip",
-  "playerX": null,
+  "playerX": {
+    "user": null,
+    "browser": "Chrome"
+  },
   "playerO": null
 }

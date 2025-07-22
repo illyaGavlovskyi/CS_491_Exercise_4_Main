@@ -1,9 +1,16 @@
+// Four-in-a-Row Game
+// Author: Illya Gavlovskyi and Thomas Vasile
+// Date: July 2025
+
+import { checkWinner } from './gameLogic.js';
+
 const SIZE = 4;
 const boardElem = document.getElementById("board");
 const button = document.getElementById("state-button");
 const playerDisplay = document.getElementById("playerNameDisplay");
 const statusEl = document.getElementById("statusMessage");
 
+// Game state variables
 let board = [];
 let currentPlayer = "";
 let gameActive = true;
@@ -12,15 +19,14 @@ let state = "Flip";
 let playerX = null;
 let playerO = null;
 let myName, myBrowser, mySymbol;
-
 let lastWinner = null;
 
-init();
+init(); // Start the game
 
 function init() {
-  myName = prompt("Enter your name:");
-  myBrowser = detectBrowser();
-  startPolling();
+  myName = prompt("Enter your name:"); // Ask player name
+  myBrowser = detectBrowser(); // Identify browser
+  startPolling(); // Get server state
 }
 
 function detectBrowser() {
@@ -31,15 +37,18 @@ function detectBrowser() {
   return "Unknown";
 }
 
+// Gets server state continuously every 500ms
 async function startPolling() {
   await fetchGame();
   setInterval(fetchGame, 500);
 }
 
+// Fetch current game state from server
 async function fetchGame() {
   const res = await fetch('/state');
   const data = await res.json();
 
+  // Update game state variables from server
   board = data.board;
   currentPlayer = data.currentPlayer;
   gameActive = data.gameActive;
@@ -47,7 +56,7 @@ async function fetchGame() {
   state = data.state;
   playerX = data.playerX;
   playerO = data.playerO;
-  lastWinner = data.lastWinner; // retrieve from server
+  lastWinner = data.lastWinner;
 
   // Assign roles
   if (!playerX && (!playerO || !isMe(playerO))) { // If there is no player X and either: there is no player O yet, or player O is not me
@@ -72,14 +81,17 @@ async function fetchGame() {
   updateStatusMessage();
 }
 
+// Check if it is player turn
 function isMyTurn() {
   return gameActive && mySymbol === currentPlayer;
 }
 
+// Check if player is matching
 function isMe(playerObj) {
   return playerObj && playerObj.user === myName && playerObj.browser === myBrowser;
 }
 
+// Send updated game state to server
 async function saveGame(state) {
   await fetch('/state', {
     method: "POST",
@@ -88,6 +100,7 @@ async function saveGame(state) {
   });
 }
 
+// Render the game board
 function renderBoard() {
   boardElem.innerHTML = "";
   for (let i = 0; i < SIZE; i++) {
@@ -95,6 +108,7 @@ function renderBoard() {
     for (let j = 0; j < SIZE; j++) {
       const cell = document.createElement("td");
       cell.textContent = board[i][j];
+      // Highlights win line
       if (winLine.some(pos => pos[0] === i && pos[1] === j)) {
         cell.classList.add("win");
       }
@@ -108,6 +122,7 @@ function renderBoard() {
   button.textContent = state;
 }
 
+// Display game status message
 function updateStatusMessage() {
   if (!playerX || !playerO) {
     statusEl.textContent = "Waiting for players to join the game";
@@ -119,7 +134,7 @@ function updateStatusMessage() {
     statusEl.textContent = "It's a draw!";
   } 
   else if (mySymbol && isMyTurn()) {
-    statusEl.textContent = "Your turn!";
+    statusEl.textContent = "Your turn";
   } 
   else if (mySymbol) {
     statusEl.textContent = `Waiting for opponent (${currentPlayer}'s turn)`;
@@ -129,15 +144,16 @@ function updateStatusMessage() {
   }
 }
 
+// Handle a move when player clicks a cell
 async function handleMove(e) {
   if (!isMyTurn()) return;
 
   const row = parseInt(e.target.dataset.row);
   const col = parseInt(e.target.dataset.col);
-  if (board[row][col] !== "") return;
+  if (board[row][col] !== "") return; // Stops overwriting
 
   board[row][col] = mySymbol;
-  winLine = checkWinner(row, col);
+  winLine = checkWinner(board, row, col, mySymbol); // Check for win
   if (winLine.length) {
     gameActive = false;
     state = "Start";
@@ -149,7 +165,7 @@ async function handleMove(e) {
     lastWinner = null;
   } 
   else {
-    currentPlayer = currentPlayer === "O" ? "X" : "O";
+    currentPlayer = currentPlayer === "O" ? "X" : "O"; // Switch turn
   }
 
   await saveGame({
@@ -157,55 +173,7 @@ async function handleMove(e) {
   });
 }
 
-function checkWinner(r, c) {
-  const dirs = [[0,1],[1,0],[1,1],[1,-1]];
-  for (const [dr, dc] of dirs) {
-    let line = [[r, c]];
-    for (let i = 1; i < 4; i++) {
-      const nr = r + dr * i, nc = c + dc * i;
-      if (nr < 0 || nr >= SIZE || nc < 0 || nc >= SIZE || board[nr][nc] !== mySymbol) break;
-      line.push([nr, nc]);
-    }
-    for (let i = 1; i < 4; i++) {
-      const nr = r - dr * i, nc = c - dc * i;
-      if (nr < 0 || nr >= SIZE || nc < 0 || nc >= SIZE || board[nr][nc] !== mySymbol) break;
-      line.push([nr, nc]);
-    }
-    if (line.length >= 4) return line;
-  }
-  return [];
-}
-
-// button.onclick = async () => {
-//   if (!mySymbol) return alert("Only X or O can control the game");
-
-//   if (state === "Flip") {
-//     const coinWinner = Math.random() < 0.5 ? "X" : "O";
-//     const oPlayer = coinWinner === "X" ? playerX : playerO;
-//     const xPlayer = coinWinner === "X" ? playerO : playerX;
-
-//     board = Array.from({ length: SIZE }, () => Array(SIZE).fill(""));
-//     currentPlayer = "O";
-//     gameActive = true;
-//     winLine = [];
-//     state = "Playing";
-
-//     await saveGame({
-//       board, currentPlayer, gameActive, winLine, state,
-//       playerX: xPlayer,
-//       playerO: oPlayer
-//     });
-//   } else if (state === "Clear" || state === "Start") {
-//     board = Array.from({ length: SIZE }, () => Array(SIZE).fill(""));
-//     winLine = [];
-//     gameActive = true;
-//     state = "Playing";
-//     currentPlayer = currentPlayer === "O" ? "X" : "O";
-
-//     await saveGame({ board, currentPlayer, gameActive, winLine, state, playerX, playerO });
-//   }
-// };
-
+// Button logic for Flip -> Clear -> Start cycle
 button.onclick = async () => {
   if (!mySymbol) return alert("Only X or O can control the game");
 
@@ -248,8 +216,6 @@ button.onclick = async () => {
     gameActive = false;
     state = "Start";
     currentPlayer = "";
-    // playerX = null;
-    // playerO = null;
 
     await saveGame({
     board, currentPlayer, gameActive, winLine, state, playerX, playerO, lastWinner
